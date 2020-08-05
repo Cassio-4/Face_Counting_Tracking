@@ -7,5 +7,13 @@ The benchmark folder contains the implementation of different trackers and detec
   - OpenCV HaarCascade
   
 - Trackers implemented:
+  - OpenCV multitracker:
+    - MedianFlow
+    - MIL
+    - Boosting
+    - TLD
+    - KCF
+    - GOTURN
+    - MOSSE
 
 The counting_test folder has a test implementation of a centroid tracker for ID assignment and a grid for counting. 

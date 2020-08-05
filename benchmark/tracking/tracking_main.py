@@ -1,4 +1,4 @@
-from benchmark.tracking.tracking_methods import TrackingHolder
+from benchmark.tracking.tracking_methods import *
 from imutils.video import FPS
 import argparse
 import cv2
@@ -11,26 +11,43 @@ Programmer: Cassio B. Nascimento
 """
 
 ap = argparse.ArgumentParser()
-ap.add_argument("-d", "--tracker", type=int, default=1,
-                help="The tracker to be used")
-ap.add_argument("-i", "--input", type=str, required=True,
-                help="Path to dataset's folder")
-ap.add_argument("-o", "--output", type=str,
-                help="Path to output hypothesis file")
+ap.add_argument("-d", "--tracker", type=str, default='opencv_medianflow',
+                required=True, help="The tracker to be used")
 
 args = vars(ap.parse_args())
-
-# Instantiate the tracker holder class with all the trackers in it
-trackers = TrackingHolder(args["tracker"])
-
-# Files with image names to be tested
-text_files = ("", "")
+if args["tracker"] == "opencv_boosting":
+    print("loading opencv_boosting")
+    tracker = OpenCVMultitracker("BOOSTING")
+elif args["tracker"] == "opencv_mil":
+    print("loading opencv_mil")
+    tracker = OpenCVMultitracker("MIL")
+elif args["tracker"] == "opencv_kcf":
+    print("loading opencv_kcf")
+    tracker = OpenCVMultitracker("KCF")
+elif args["tracker"] == "opencv_tld":
+    print("loading opencv_tld")
+    tracker = OpenCVMultitracker("TLD")
+elif args["tracker"] == "opencv_csrt":
+    print("loading opencv_csrt")
+    tracker = OpenCVMultitracker("CSRT")
+elif args["tracker"] == "opencv_goturn":
+    print("loading opencv_goturn")
+    tracker = OpenCVMultitracker("GOTURN")
+elif args["tracker"] == "opencv_mosse":
+    print("loading opencv_mosse")
+    tracker = OpenCVMultitracker("MOSSE")
+else:
+    print("loading opencv_medianflow")
+    tracker = OpenCVMultitracker("MEDIANFLOW")
 
 # Start the frames per second throughput estimator
 fps = FPS().start()
 
 # Open output file to write results on
-output_file = open(args["output"] + str(args["tracker"]) + ".xml", "w")
+output_file = open("outputs/" + args["tracker"] + ".xml", "w")
+
+# Open video
+# cap = cv2.VideoCapture(videoPath)
 
 # Loop through all 10 files with image names
 for file in text_files:
