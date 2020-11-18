@@ -1,5 +1,4 @@
-# The datasets should be downloaded externally not from git
-benchmark/detection/datasets/FDDB_dataset
+dataset/*
 # Compiled source #
 ###################
 *.com
