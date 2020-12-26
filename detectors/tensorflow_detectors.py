@@ -1,5 +1,6 @@
 import tensorflow as tf
 import numpy as np
+import cv2
 
 
 class FaceboxesTensorflow:
@@ -42,12 +43,14 @@ class FaceboxesTensorflow:
         """Detect faces.
         Arguments:
             image: a numpy uint8 array with shape [height, width, 3],
-                that represents a RGB image.
+                that represents a BGR image.(Nesse caso e BGR pq a main esta lendo com opencv)
         Returns:
             boxes: a unsigned16 numpy array of shape [num_faces, 4].
             scores: a float numpy array of shape [num_faces].
         Note that box coordinates are in the order: xmin, ymin, xmax, ymax!!
         """
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
         h, w, _ = image.shape
         image = np.expand_dims(image, 0)
 
@@ -72,4 +75,4 @@ class FaceboxesTensorflow:
         boxes[:] = boxes[:, idx]  # in-place modification
         boxes = np.array(boxes, dtype=np.uint16)
 
-        return boxes, scores
+        return boxes

@@ -9,28 +9,40 @@ Programmer: Cassio B. Nascimento
 """
 
 
-def get_all_image_names_as_list(common_path, video):
-    path_to_txt = common_path + video + '/all_file.txt'
+def draw_boxes_on_image(image, detections):
+    """
+    Draws bounding boxes and Ids on image
+    :param detections: list/array with shape (num_faces, 4)
+    :param image: the image to draw on (using opencv)
+    :return: the drawn on frame
+    """
+    image_copy = image.copy()
+    for box in detections:
+        cv2.rectangle(image_copy, (box[0], box[1]), (box[2], box[3]), (0, 255, 0), 1)
+    return image_copy
+
+
+def get_all_image_names_as_list(path):
+    path_to_txt = path + 'all_images.txt'
+    image_paths = []
     image_names = []
     with open(path_to_txt, 'r') as file:
         for fileline in file:
-            image_names.append(common_path+video+'/'+fileline.strip(" \n"))
-    return image_names
+            image_paths.append(path + '/' + fileline.strip(" \n"))
+            image_names.append(fileline.strip(" \n"))
+    return image_paths, image_names
 
 
 if __name__ == '__main__':
-    common_path = "/home/cassio/PycharmProjects/Face_Counting_Tracking/dataset/Chokepoint/"
     # Files with image names to be tested
-
-    chokepoint_videos = ("P1E_S1/P1E_S1_C1", )
-    # my_videos = ("")
+    dataset = ("dataset/images/bar/bar001/", "dataset/images/market/market001/")
 
     # Loop through each video, outputting results in a xml file
-    for video in chokepoint_videos:
+    for video_sequence in dataset:
         # Get the name of this video sequence
-        video_sequence_name = video.split('/')[1]
+        video_sequence_name = video_sequence.split('/')[-2]
         # Open the txt file with all images's names
-        images = get_all_image_names_as_list(common_path, video)
+        image_paths, image_names = get_all_image_names_as_list(video_sequence)
         # Frame counter
         total_frames = 0
         # Start the xml writer
@@ -38,20 +50,22 @@ if __name__ == '__main__':
         # Start the frames per second throughput estimator
         fps = FPS().start()
 
-        for image in images:
-            frame = cv2.imread(image)
+        for img_path, img_name in zip(image_paths, image_names):
+            frame = cv2.imread(img_path)
 
             # If skip frames passed, run detector
             if total_frames % config.SKIP == 0:
+                # detections should be a list/array of shape (num_faces, 4)
                 detections = config.DETECTOR.detect(frame)
+                if config.SKIP != 1:
+                    config.TRACKER.create_trackers(detections, frame)
             else:
-                # RUN TRACKEr
-                pass
+                detections = config.TRACKER.update_trackers(frame)
 
-            frame_info = ET.SubElement(root, "frame", number="{}".format(total_frames))
+            frame_info = ET.SubElement(root, "frame", name="{}".format(img_name))
             for detection in detections:
-                ET.SubElement(frame_info, "bbox", x_left="{}".format(), y_top="{}".format(),
-                              x_right="{}".format(), y_bottom="{}".format())
+                ET.SubElement(frame_info, "bbox", x_left="{}".format(detection[0]), y_top="{}".format(detection[1]),
+                              x_right="{}".format(detection[2]), y_bottom="{}".format(detection[3]))
             # Update counters
             fps.update()
             total_frames += 1
@@ -59,12 +73,12 @@ if __name__ == '__main__':
             # If we want to see things happening, render video. This should be off during
             # actual benchmark
             if config.SHOW:
-                cv2.imshow(video_sequence_name, frame)
-                cv2.waitKey(0)
+                cv2.imshow(video_sequence_name, draw_boxes_on_image(frame, detections))
+                _ = cv2.waitKey(1) & 0xFF
 
         # Before closing the output file write FPS info
         fps.stop()
         fps_info = ET.SubElement(root, "fps_info", approx_fps='{}'.format(fps.fps()),
                                  elaps_time='{}'.format(fps.elapsed()))
         tree = ET.ElementTree(root)
-        tree.write("output/"+video_sequence_name+".xml")
+        tree.write("output/"+config.TEST_NAME+video_sequence_name+".xml")
