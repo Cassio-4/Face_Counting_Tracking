@@ -1,30 +1,23 @@
 import os
 
 
-# Navigate to folder with all videos in it
-og_path = "/home/cassio/PycharmProjects/Face_Counting_Tracking/dataset/market/event001/"
-video_path = "/home/cassio/PycharmProjects/Face_Counting_Tracking/dataset/videos/market/market001/"
-gt_path = "/home/cassio/PycharmProjects/Face_Counting_Tracking/dataset/groundtruth/market/market001/"
-# Get all paths
-all_xml = []
+# Navigate to folder with all frames in it
+og_path = "/home/cassio/dataset/Images/P2L_S5_C3.1"
+destination_path = "/home/cassio/dataset/Images/renamed-P2L_S5_C3.1/"
+
 all_jpg = []
 for r, d, f in os.walk(og_path):
     for file in f:
         if file.endswith("jpg"):
             all_jpg.append(os.path.join(r, file))
-        elif file.endswith("xml"):
-            all_xml.append(os.path.join(r, file))
 
-# Rename all videos and gt files
-for gt in all_xml:
-    new_gt = gt.split('/')[-1].split('-')[0]
-    new_gt = "market001-{}.xml".format(new_gt)
-    # Move gt files
-    os.rename(gt, gt_path+new_gt)
+all_jpg.sort()
 
-for jpg in all_jpg:
-    new_jpg = jpg.split('/')[-1].split('-')[0]
-    new_jpg = "market001-{}.jpg".format(new_jpg)
-    os.rename(jpg, video_path+new_jpg)
+for i in range(len(all_jpg)):
+    jpg = all_jpg[i]
+    number = str(i+1)
+    number = number.zfill(5)
+    new_jpg = "{}.jpg".format(number)
+    os.rename(jpg, destination_path+new_jpg)
 
 
