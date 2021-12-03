@@ -91,8 +91,8 @@ def draw_and_create_video(path, gt, size, fps, video_name):
                     # Draw a bbox from the annotation
                     im = cv2.rectangle(im, (pos_x, pos_y), (pos_x + w, pos_y + h), (0, 255, 0), 2)
                     # Write detection id on the bbox
-                    im = cv2.putText(im, str(key), (pos_x+1, pos_y+1), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA,
-                                     bottomLeftOrigin=False)
+                    #im = cv2.putText(im, str(key), (pos_x+1, pos_y+1), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA,
+                                    # bottomLeftOrigin=False)
         else:
             print("Desired frame key %d does not exist in annotations" % i)
             exit(2)
@@ -106,10 +106,10 @@ def draw_and_create_video(path, gt, size, fps, video_name):
 """
 draw_and_create_video(path=frames_path["choke1_path"], gt=annotations_path["choke1_gt"],
                       size=video_dimensions["choke_size"], fps=framerates["choke_fps"], video_name="choke1_bboxes.avi")
-"""
+
 draw_and_create_video(path=frames_path["choke2_path"], gt=annotations_path["choke2_gt"],
                       size=video_dimensions["choke_size"], fps=framerates["choke_fps"], video_name="choke2_bboxes_faceOnly.avi")
-"""
+
 draw_and_create_video(path=frames_path["street_path"], gt=annotations_path["street_gt"],
                       size=video_dimensions["full_hd_size"], fps=framerates["street_fps"], video_name="street_bboxes_faceonly.avi")
 #draw_and_create_video(path=frames_path["sidewalk_path"], gt=annotations_path["sidewalk_gt"],
