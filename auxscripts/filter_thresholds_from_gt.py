@@ -1,11 +1,11 @@
 import glob
 
-common_path = "/home/cassio/CrowdedDataset/DetectionFiles/"
-path_to_save = common_path + "Yolov5/Yolov5l/Yolov5l-clean-scoxyXY/"
-new_thresh = 0.00
+common_path = "/home/cassio/CrowdedDataset/DetectionFiles/TinaFace/"
+path_to_save = common_path + "tinaFace_R50-FPN-GN-DCN/tinaFace_R50-FPN-GN-DCN_thresh8_scoxyXY/"
+new_thresh = 0.08
 # Grab original detections
 det_file_names = []
-for filename in glob.glob(common_path + "Yolov5/Yolov5l/Results/*.txt"):
+for filename in glob.glob(common_path + "tinaFace_R50-FPN-GN-DCN/tinaFace_R50-FPN-GN-DCN_nothresh/*.txt"):
     det_file_names.append(filename)
 # For each original detection file
 for det_file in det_file_names:
